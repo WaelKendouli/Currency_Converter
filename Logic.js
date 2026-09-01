@@ -108,4 +108,24 @@
         return `${y}-${m}-${day}`;
       }
 
-      
+      async function loadHistory(from, to, days = 30)
+      {
+        const end = new Date();
+
+        const start = new Date(end.getTime() - days * 24 * 60 * 60 * 1000);
+
+        const startStr = formatDate(start);
+
+        const url = `${API}/${startStr}..?base=${encodeURIComponent(
+          from
+        )}&symbols=${encodeURIComponent(to)}`;
+
+        const data = await apiFetchJson(url,controller.signal);
+
+        const rows = Object.entries(data.rates).
+        map(([date,obj]) => ({date,rate:obj[to]})).
+        filter((t) => typeof t === "number").
+        sort((a,b)=> a.date.loadCompare(b.date));
+        ;
+        return rows;
+      }
