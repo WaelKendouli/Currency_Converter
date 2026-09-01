@@ -30,3 +30,25 @@
 
       let controller = null;
       let currencyMap = {};
+      function setLoading(isLoading) {
+        UI.loading.style.display = isLoading ? "flex" : "none";
+
+        // ✅ Disable buttons while loading to prevent spam clicks
+        UI.btnConvert.disabled = isLoading;
+        UI.btnSwap.disabled = isLoading;
+        UI.btnUseUSDJOD.disabled = isLoading;
+        UI.btnUseEURUSD.disabled = isLoading;
+      }
+
+      function setError(message) {
+        // ✅ If message is empty/null → hide error box
+        if (!message) {
+          UI.error.style.display = "none";
+          UI.error.textContent = "";
+          return;
+        }
+
+        // ✅ Else show it
+        UI.error.style.display = "block";
+        UI.error.textContent = message;
+      }
