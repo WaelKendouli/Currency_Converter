@@ -59,3 +59,31 @@
             if (!res.ok) throw new Error(`HTTP ${res.status} (${res.statusText})`);
             return res.json();
         }
+
+        async function loadCurrencies()
+        {
+            const data = await apiFetchJson(`${API}/currencies`, controller.signal);
+            currencyMap = data;
+
+            const codes = Object.keys(currencyMap).sort();
+
+            UI.from.innerHTML = "";
+            UI.to.innerHTML = "";
+
+            for(const code of codes)
+            {
+                const name = currencyMap[code];
+                const opt1 = document.createElement("option");
+                opt1.value = code;
+                opt1.textContent = `${code} — ${name}`;
+                UI.from.appendChild(opt1);
+
+                const opt2 = document.createElement("option");
+                opt2.value = code;
+                opt2.textContent = `${code} — ${name}`;
+                UI.to.appendChild(opt2);
+            }
+            UI.from.value = "USD";
+            UI.to.value = "EUR";
+            UI.content.style.display = "grid";
+        }
