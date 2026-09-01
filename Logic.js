@@ -87,3 +87,16 @@
             UI.to.value = "EUR";
             UI.content.style.display = "grid";
         }
+
+
+        async function convertOnce(from , to , amount){
+            const url = `${API}/latest?base=${encodeURIComponent(
+          from
+        )}&symbols=${encodeURIComponent(to)}`;
+        const data = await apiFetchJson(url , controller.signal);
+        const rate = data.rate?.[to];
+                if (!rate) throw new Error(`Rate not found for ${from} → ${to}`);
+
+                const converted = amount * rate;
+             return { rate, converted, date: data.date, base: data.base };
+        }
