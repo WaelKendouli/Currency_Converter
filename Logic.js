@@ -52,3 +52,10 @@
         UI.error.style.display = "block";
         UI.error.textContent = message;
       }
+
+        async function apiFetchJson(url,signal)
+        {
+            const res = await fetch(url,{signal});
+            if (!res.ok) throw new Error(`HTTP ${res.status} (${res.statusText})`);
+            return res.json();
+        }
