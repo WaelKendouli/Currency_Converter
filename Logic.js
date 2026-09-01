@@ -27,3 +27,6 @@
         chart: document.getElementById("chart"),
         historyBody: document.getElementById("historyBody"),
       };
+
+      let controller = null;
+      let currencyMap = {};
