@@ -244,4 +244,48 @@
         }
       }
 
-      
+      UI.btnConvert.addEventListener("click",run);
+
+      UI.btnSwap.addEventListener("click", () => {
+        const tmp = UI.from.value;
+        UI.from.value = UI.to.value;
+        UI.to.value = tmp;
+        run();
+      });
+
+      UI.btnUseUSDJOD.addEventListener("click", () => {
+        UI.from.value = "USD";
+        run();
+      });
+
+      UI.btnUseEURUSD.addEventListener("click",() => {
+        UI.from.value ="EUR";
+        UI.to.value = "USD";
+        run();
+      });
+
+        UI.amount.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") run();
+      });
+
+      (async function boot()
+    {
+      setLoading(true);
+
+      try {
+        controller = new AbortController();
+
+        await loadCurrencies();
+        await run();
+
+      }
+      catch(e)
+      {
+        setError(`❌ ${e.message}`);
+      }
+      finally
+      {
+        setLoading(false);
+      }
+    })();
+
