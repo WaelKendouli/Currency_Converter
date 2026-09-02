@@ -94,7 +94,7 @@
           from
         )}&symbols=${encodeURIComponent(to)}`;
         const data = await apiFetchJson(url , controller.signal);
-        const rate = data.rate?.[to];
+        const rate = data.rates?.[to];
                 if (!rate) throw new Error(`Rate not found for ${from} → ${to}`);
 
                 const converted = amount * rate;
@@ -124,8 +124,8 @@
 
         const rows = Object.entries(data.rates).
         map(([date,obj]) => ({date,rate:obj[to]})).
-        filter((t) => typeof t === "number").
-        sort((a,b)=> a.date.loadCompare(b.date));
+        filter((t) => typeof t.rate === "number").
+        sort((a,b)=> a.date.localeCompare(b.date));
         ;
         return rows;
       }
@@ -268,24 +268,22 @@
         if (e.key === "Enter") run();
       });
 
-      (async function boot()
-    {
-      setLoading(true);
+      (async function boot() {
+        setLoading(true);
 
-      try {
-        controller = new AbortController();
+        try {
+          // ✅ Create controller for the initial currency load
+          controller = new AbortController();
 
-        await loadCurrencies();
-        await run();
+          // ✅ 1) Load dropdowns
+          await loadCurrencies();
 
-      }
-      catch(e)
-      {
-        setError(`❌ ${e.message}`);
-      }
-      finally
-      {
-        setLoading(false);
-      }
-    })();
+          // ✅ 2) Run initial conversion so user sees results instantly
+          await run();
+        } catch (err) {
+          setError(`❌ ${err.message}`);
+        } finally {
+          setLoading(false);
+        }
+      })();
 
