@@ -199,3 +199,49 @@
   `
        }).join();
       }
+
+      async function run()
+      {
+        if (controller) {
+          controller.abort();
+          controller = new AbortController();
+        }
+
+        setError("");
+        const amount = Number(UI.amount.value);
+        const from = UI.from.value;
+        const to = UI.to.value;
+
+        if(!Number.isFinite(amount)|| amount < 0)
+                    return setError("❌ Enter a valid positive amount.");
+        if(to===from) return setError("❌ Choose two different currencies.");
+        setLoading(true);
+
+        try {
+          const { rate, converted, date } = await convertOnce(from, to, amount);
+
+          UI.result.textContent = `${converted.toFixed(2)} ${to}`;
+          UI.meta.textContent = `${amount.toFixed(2)} ${from} → ${to}`;
+          UI.ratePill.textContent = `Rate: 1 ${from} = ${rate.toFixed(
+            6
+          )} ${to}`;
+          UI.datePill.textContent = `Date: ${date}`;
+
+          const rows = await loadHistory(from,to,30);
+          drawChart(UI.chart,rows);
+          renderHistoryTable(rows);
+
+        }
+        catch(e)
+        {
+        if (e.name==="AbortError") {
+        return ; 
+        }
+        setError(e.message);
+        }
+        finally {
+          setLoading(false);
+        }
+      }
+
+      
