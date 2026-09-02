@@ -129,3 +129,61 @@
         ;
         return rows;
       }
+
+            function drawChart(canvas, points) {
+        const ctx = canvas.getContext("2d");
+
+        // ✅ Clear old drawing
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        // ✅ If no points: show a message
+        if (!points.length) {
+          ctx.font = "16px system-ui";
+          ctx.fillText("No history data available.", 18, 40);
+          return;
+        }
+
+        // ✅ Padding gives some space from borders
+        const padding = 24;
+        const W = canvas.width;
+        const H = canvas.height;
+
+        // ✅ Find min/max to scale the chart
+        const ys = points.map((p) => p.rate);
+        const minY = Math.min(...ys);
+        const maxY = Math.max(...ys);
+
+        // ✅ Avoid division by zero if all values are equal
+        const safeRange = maxY - minY || 1;
+
+        // ✅ Draw baseline axis (simple horizontal line)
+        ctx.globalAlpha = 0.7;
+        ctx.beginPath();
+        ctx.moveTo(padding, H - padding);
+        ctx.lineTo(W - padding, H - padding);
+        ctx.stroke();
+        ctx.globalAlpha = 1;
+
+        // ✅ Plot the line
+        ctx.beginPath();
+        points.forEach((p, i) => {
+          // x goes from left padding to right padding
+          const x =
+            padding + (i * (W - padding * 2)) / (points.length - 1 || 1);
+
+          // y is scaled so min is bottom and max is top
+          const y =
+            H - padding - ((p.rate - minY) * (H - padding * 2)) / safeRange;
+
+          if (i === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        });
+        ctx.stroke();
+
+        // ✅ Add small labels for min/max
+        ctx.globalAlpha = 0.85;
+        ctx.font = "14px system-ui";
+        ctx.fillText(`Min: ${minY.toFixed(6)}`, padding, 18);
+        ctx.fillText(`Max: ${maxY.toFixed(6)}`, padding + 160, 18);
+        ctx.globalAlpha = 1;
+      }
