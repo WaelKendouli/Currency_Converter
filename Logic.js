@@ -187,3 +187,15 @@
         ctx.fillText(`Max: ${maxY.toFixed(6)}`, padding + 160, 18);
         ctx.globalAlpha = 1;
       }
+
+      function renderHistoryTable(rows) {
+       const last = rows.slice(-12).reverse();
+       UI.historyBody.innerHTML = last.map((r)=> {
+        `
+    <tr>
+      <td>${r.date}</td>
+      <td>${r.rate.toFixed(6)}</td>
+    </tr>
+  `
+       }).join();
+      }
